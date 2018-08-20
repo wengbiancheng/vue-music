@@ -3,7 +3,9 @@
     <div class="slider-group" ref="sliderGroup">
       <slot></slot>
     </div>
-    <div class="dots"></div>
+    <div class="dots">
+      <span v-for="item in dots" class="dot" v-bind:key="item"></span>
+    </div>
   </div>
 </template>
 
@@ -38,9 +40,15 @@
         default: 400
       }
     },
+    data() {
+      return {
+        dots: []
+      };
+    },
     mounted: function () {
       setTimeout(() => {
         this._initSlider();
+        this._initDots();
         this._initScroll();
       }, 20);
     },
@@ -60,6 +68,9 @@
           width += 2 * sliderWidth;
         }
         this.$refs.sliderGroup.style.width = width + 'px';
+      },
+      _initDots: function () {
+        this.dots = new Array(this.children.length);
       },
       _initScroll: function () {
         // 注意，better-scroll版本更新后，写法发生了变化，要懂得看文档！
@@ -82,8 +93,10 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+  @import "../../common/stylus/variable.styl"
   .slider
     min-height: 1px
+    position: relative
     .slider-group
       position: relative
       overflow: hidden
@@ -101,4 +114,18 @@
         img
           display: block
           width: 100%
+    .dots
+      position: absolute
+      right: 0
+      left: 0
+      bottom: 12px
+      text-align: center
+      font-size: 0
+      .dot
+        display: inline-block
+        width: 8px
+        height: 8px
+        margin: 0px 4px
+        border-radius: 50%
+        background: $color-text-l
 </style>
