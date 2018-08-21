@@ -1,10 +1,36 @@
 <template>
-    <div>rank!!!</div>
+  <div class="singer"></div>
 </template>
 
 <script type="text/ecmascript-6">
-    export default {};
+  import {getSingerList} from '../../api/singer';
+  import {ERR_OK} from '../../api/config';
+
+  export default {
+    data() {
+      return {
+        singers: []
+      };
+    },
+    created() {
+      this._getSingerList();
+    },
+    methods: {
+      _getSingerList: function () {
+        getSingerList().then((res) => {
+          if (res.code === ERR_OK) {
+            console.log(res.data.list);
+          }
+        });
+      }
+    }
+  };
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+  .singer
+    position: fixed
+    top: 88px
+    bottom: 0px
+    width: 100%
 </style>
