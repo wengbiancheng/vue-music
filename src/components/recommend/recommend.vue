@@ -1,30 +1,32 @@
 <template>
   <div class="recommend">
-    <div class="recommend-content">
-      <div class="slider-wrapper" v-if="recommends.length">
-        <slider>
-          <div v-for="(item,index) in recommends" v-bind:key="index">
-            <a :href="item.linkUrl">
-              <img :src="item.picUrl">
-            </a>
-          </div>
-        </slider>
-      </div>
-      <div class="recommend-list">
-        <h1 class="list-title">热门歌单推荐</h1>
-        <ul>
-          <li class="item" v-for="(item,index) in discList" v-bind:key="index">
-            <div class="icon">
-              <img :src="item.imgurl" width="60" height="60">
+    <scroll ref="scroll" class="recommend-content" :data="discList">
+      <div>
+        <div class="slider-wrapper" v-if="recommends.length">
+          <slider>
+            <div v-for="(item,index) in recommends" v-bind:key="index">
+              <a :href="item.linkUrl">
+                <img :src="item.picUrl" @load="loadImage">
+              </a>
             </div>
-            <div class="text">
-              <h2 class="name" v-html="item.creator.name"></h2>
-              <p class="desc" v-html="item.dissname"></p>
-            </div>
-          </li>
-        </ul>
+          </slider>
+        </div>
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li class="item" v-for="(item,index) in discList" v-bind:key="index">
+              <div class="icon">
+                <img :src="item.imgurl" width="60" height="60">
+              </div>
+              <div class="text">
+                <h2 class="name" v-html="item.creator.name"></h2>
+                <p class="desc" v-html="item.dissname"></p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
+    </scroll>
   </div>
 </template>
 
@@ -32,6 +34,7 @@
   import {getRecommend, getDiscList} from '../../api/recommend';
   import {ERR_OK} from '../../api/config';
   import Slider from '../../base/slider/slider';
+  import Scroll from '../../base/scroll/scroll';
 
   export default {
     data() {
@@ -56,10 +59,20 @@
         getDiscList().then((res) => {
           this.discList = res.data.list;
         });
+      },
+      loadImage: function () {
+        if (!this.checkloaded) {
+          this.checkloaded = true;
+          setTimeout(() => {
+            // TODO 这种用法第一次见！要注意
+            this.$refs.scroll.refresh();
+          }, 20);
+        }
       }
     },
     components: {
-      Slider
+      Slider,
+      Scroll
     }
   };
 </script>
@@ -87,23 +100,23 @@
           color: $color-theme
         .item
           display: flex
-          box-sizing :border-box
-          align-items :center
-          padding:0 20px 20px 20px
+          box-sizing: border-box
+          align-items: center
+          padding: 0 20px 20px 20px
           .icon
-            flex:0 0 60px
-            width:60px
-            padding-right:20px
+            flex: 0 0 60px
+            width: 60px
+            padding-right: 20px
           .text
             flex: 1
             display: flex
-            flex-direction :column
-            justify-content :center
-            line-height:20px
+            flex-direction: column
+            justify-content: center
+            line-height: 20px
             overflow: hidden
             font-size: $font-size-medium
             .name
-              margin-bottom:10px
+              margin-bottom: 10px
               color: $color-text
             .desc
               color: $color-text-d
