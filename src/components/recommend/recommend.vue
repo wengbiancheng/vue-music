@@ -12,7 +12,17 @@
       </div>
       <div class="recommend-list">
         <h1 class="list-title">热门歌单推荐</h1>
-        <ul></ul>
+        <ul>
+          <li class="item">
+            <div class="icon">
+              <img src="" width="60" height="60">
+            </div>
+            <div class="text">
+              <h2 class="name"></h2>
+              <p class="desc"></p>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -26,7 +36,8 @@
   export default {
     data() {
       return {
-        recommends: []
+        recommends: [],
+        discList: []
       };
     },
     created() {
@@ -43,7 +54,7 @@
       },
       _getDiscList: function () {
         getDiscList().then((res) => {
-          console.log(res);
+          this.discList = res.data.list;
         });
       }
     },
@@ -74,4 +85,26 @@
           text-align: center
           font-size: $font-size-medium
           color: $color-theme
+        .item
+          display: flex
+          box-sizing :border-box
+          align-items :center
+          padding:0 20px 20px 20px
+          .icon
+            flex:0 0 60px
+            width:60px
+            padding-right:20px
+          .text
+            flex: 1
+            display: flex
+            flex-direction :column
+            justify-content :center
+            line-height:20px
+            overflow: hidden
+            font-size: $font-size-medium
+            .name
+              margin-bottom:10px
+              color: $color-text
+            .desc
+              color: $color-text-d
 </style>
