@@ -11,9 +11,10 @@
         </ul>
       </li>
     </ul>
-    <div class="list-shortcut">
+    <div class="list-shortcut" @touchstart.stop.prevent="onShortcutTouchStart">
       <ul>
-        <li v-for="(item,index) in shortcutList" v-bind:key="index" class="item">{{item}}</li>
+        <li v-for="(item,index) in shortcutList" v-bind:key="index" class="item" :data-index="index">{{item}}
+        </li>
       </ul>
     </div>
   </scroll>
@@ -21,6 +22,7 @@
 
 <script type="text/ecmascript-6">
   import Scroll from '../scroll/scroll';
+  import {getData} from '../../common/js/dom';
 
   export default {
     props: {
@@ -36,6 +38,18 @@
         return this.data.map((group) => {
           return group.title.substr(0, 1);
         });
+      }
+    },
+    methods: {
+      onShortcutTouchStart: function (e) {
+        let anchorIndex = getData(e.target, 'index');
+        this._scrollTo(anchorIndex);
+      },
+      _scrollTo(index) {
+        if (!index && index !== 0) {
+          return;
+        }
+        this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0);
       }
     },
     components: {
