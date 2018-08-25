@@ -1,5 +1,6 @@
 <template>
-  <scroll class="listview" ref="listview" :data="data" @scroll="scroll" :listen-scroll="listenScroll" :probe-type="probeType">
+  <scroll class="listview" ref="listview" :data="data" @scroll="scroll" :listen-scroll="listenScroll"
+          :probe-type="probeType">
     <ul>
       <li v-for="(group,index) in data" v-bind:key="index" class="list-group" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
@@ -19,6 +20,9 @@
         </li>
       </ul>
     </div>
+    <div class="list-fixed" ref="fixed" v-show="fixedTitle">
+      <div class="fixed-title">{{fixedTitle}}</div>
+    </div>
   </scroll>
 </template>
 
@@ -27,11 +31,13 @@
   import {getData} from '../../common/js/dom';
 
   const ANCHOR_HEIGHT = 18;
+  const TITLE_HEIGHT = 30;
 
   export default {
     created() {
       this.touch = {};
       this.listHeight = [];
+      this.fixedTop = 0;
     },
     props: {
       data: {
@@ -46,7 +52,8 @@
         currentIndex: 0,
         listenScroll: true,
         scrollY: -1,
-        probeType: 3
+        probeType: 3,
+        diff: -1
       };
     },
     computed: {
@@ -54,6 +61,12 @@
         return this.data.map((group) => {
           return group.title.substr(0, 1);
         });
+      },
+      fixedTitle: function () {
+        if (scrollY > 0) {
+          return '';
+        }
+        return this.data[this.currentIndex] ? this.data[this.currentIndex].title : '';
       }
     },
     methods: {
@@ -121,12 +134,22 @@
           let height2 = listHeight[i + 1];
           if (-newY >= height1 && -newY < height2) {
             this.currentIndex = i;
+            this.diff = height2 + newY;
             return;
           }
         }
 
         // 底部滚动
         this.currentIndex = listHeight.length - 2;
+      },
+      diff: function (newVal) {
+        let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0;
+        if (this.fixedTop === fixedTop) {
+          return;
+        }
+        console.warn('得到的fixedTop is:' + fixedTop);
+        this.fixedTop = fixedTop;
+        this.$refs.fixed.style.transform = `translate3d(0,${fixedTop}px,0)`;
       }
     },
     components: {
@@ -184,4 +207,16 @@
         font-size: $font-size-small
         &.current
           color: $color-theme
+    .list-fixed
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      .fixed-title
+        height: 30px
+        line-height: 30px
+        padding-left: 20px
+        font-size: $font-size-small
+        color: $color-text-l
+        background: $color-highlight-background
 </style>
