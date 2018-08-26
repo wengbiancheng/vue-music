@@ -6,8 +6,41 @@
 
 <script type="text/ecmascript-6">
   import {mapGetters} from 'vuex';
+  import {getSingerDetail} from '../../api/singer';
+  import {ERR_OK} from '../../api/config';
+  import {createSong} from '../../common/js/song';
 
   export default {
+    created() {
+      this._getDetail();
+    },
+    data() {
+      return {
+        songs: []
+      };
+    },
+    methods: {
+      _getDetail: function () {
+        if (!this.singer.id) {
+          this.$router.push('/singer');
+          return;
+        }
+        getSingerDetail(this.singer.id).then((res) => {
+          if (res.code === ERR_OK) {
+            this.songs = this._normalizeSongs(res.data.list);
+            console.log(this.songs);
+          }
+        });
+      },
+      _normalizeSongs: function (list) {
+        let ret = [];
+        list.forEach((item) => {
+          let {musicData} = item;
+          ret.push(createSong(musicData));
+        });
+        return ret;
+      }
+    },
     computed: {
       ...mapGetters([
         'singer'
