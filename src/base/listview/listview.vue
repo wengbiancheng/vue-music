@@ -5,7 +5,8 @@
       <li v-for="(group,index) in data" v-bind:key="index" class="list-group" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
-          <li v-for="(item,index1) in group.items" v-bind:key="index1" class="list-group-item">
+          <li v-for="(item,index1) in group.items" v-bind:key="index1" class="list-group-item"
+              @click="selectItem(item)">
             <img class="avatar" v-lazy="item.avatar">
             <span class="name">{{item.name}}</span>
           </li>
@@ -74,6 +75,9 @@
       }
     },
     methods: {
+      selectItem: function (item) {
+        this.$emit('select', item);
+      },
       onShortcutTouchStart: function (e) {
         let anchorIndex = getData(e.target, 'index');
         this._scrollTo(anchorIndex);
@@ -228,5 +232,5 @@
       position: absolute
       top: 50%
       width: 100%
-      transform :translateY(-50%)
+      transform: translateY(-50%)
 </style>
