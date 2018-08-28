@@ -7,7 +7,9 @@
     <div class="bg-image" :style="bgStyle" ref="bgImage">
       <div class="filter" ref="filter"></div>
     </div>
-    <scroll class="list" :data="songs" :listen-scroll="listenScroll" :probe-type="probeType" ref="list">
+    <div class="bg-layer" ref="layer"></div>
+    <scroll class="list" :data="songs" :listen-scroll="listenScroll" :probe-type="probeType" ref="list"
+            @scroll="scroll">
       <div class="song-list-wrapper">
         <song-list :songs="songs"></song-list>
       </div>
@@ -18,6 +20,8 @@
 <script type="text/ecmascript-6">
   import Scroll from '../../base/scroll/scroll';
   import SongList from '../../base/song-list/song-list';
+
+  const RESERVED_HEIGHT = 40;
 
   export default {
     props: {
@@ -39,10 +43,27 @@
     data() {
       return {
         listenScroll: true,
-        probeType: 3
+        probeType: 3,
+        scrollY: 0
       };
     },
     created() {
+    },
+    watch: {
+      scrollY: function (newY) {
+        let translateY = Math.max(this.maxTranslateY, newY);
+        let zIndex = 0;
+        this.$refs.layer.style.transform = `translate3d(0,${translateY}px,0)`;
+        if (this.maxTranslateY > newY) {
+          zIndex = 10;
+          this.$refs.bgImage.style.paddingTop = 0;
+          this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`;
+        } else {
+          this.$refs.bgImage.style.paddingTop = '70%';
+          this.$refs.bgImage.style.height = 0;
+        }
+        this.$refs.bgImage.style.zIndex = zIndex;
+      }
     },
     computed: {
       bgStyle: function () {
@@ -51,7 +72,13 @@
     },
     mounted() {
       this.imageHeight = this.$refs.bgImage.clientHeight;
+      this.maxTranslateY = -this.imageHeight + RESERVED_HEIGHT;
       this.$refs.list.$el.style.top = `${this.imageHeight}px`;
+    },
+    methods: {
+      scroll: function (pos) {
+        this.scrollY = pos.y;
+      }
     },
     components: {
       Scroll,
@@ -107,13 +134,16 @@
         width: 100%
         height: 100%
         background: rgba(7, 17, 27, 0.4)
+    .bg-layer
+      position: relative
+      height: 100%
+      background: $color-background
     .list
       position: fixed
       top: 0px
       bottom: 0px
       width: 100%
       background: $color-background
-      overflow: hidden
       .song-list-wrapper
         padding: 20px 30px
 </style>
