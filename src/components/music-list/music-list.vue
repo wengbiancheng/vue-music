@@ -4,11 +4,21 @@
       <i class="icon-back"></i>
     </div>
     <h1 class="title" v-html="title"></h1>
-    <div class="bg-image" :style="bgStyle" ref="bgImage"></div>
+    <div class="bg-image" :style="bgStyle" ref="bgImage">
+      <div class="filter" ref="filter"></div>
+    </div>
+    <scroll class="list" :data="songs" :listen-scroll="listenScroll" :probe-type="probeType" ref="list">
+      <div class="song-list-wrapper">
+        <song-list :songs="songs"></song-list>
+      </div>
+    </scroll>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import Scroll from '../../base/scroll/scroll';
+  import SongList from '../../base/song-list/song-list';
+
   export default {
     props: {
       title: {
@@ -26,12 +36,26 @@
         }
       }
     },
+    data() {
+      return {
+        listenScroll: true,
+        probeType: 3
+      };
+    },
+    created() {
+    },
     computed: {
       bgStyle: function () {
         return `background-image:url(${this.bgImage})`;
       }
     },
+    mounted() {
+      this.imageHeight = this.$refs.bgImage.clientHeight;
+      this.$refs.list.$el.style.top = `${this.imageHeight}px`;
+    },
     components: {
+      Scroll,
+      SongList
     }
   };
 </script>
@@ -76,15 +100,20 @@
       padding-top: 70%
       transform-origin: top
       background-size: cover
+      .filter
+        position: absolute
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
+        background: rgba(7, 17, 27, 0.4)
     .list
-      position: absolute
+      position: fixed
       top: 0px
       bottom: 0px
       width: 100%
       background: $color-background
+      overflow: hidden
       .song-list-wrapper
-        position: absolute
-        width: 100%
-        top: 50%
-        transform: translateY(-50%)
+        padding: 20px 30px
 </style>
