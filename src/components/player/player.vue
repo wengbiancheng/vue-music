@@ -1,5 +1,5 @@
 <template>
-  <div class="player">
+  <div class="player" v-show="playlist.length > 0">
     <div class="normal-player" v-show="fullScreen">播放器</div>
     <div class="mini-player" v-show="!fullScreen"></div>
   </div>
@@ -13,7 +13,8 @@
       ...mapGetters([
         'currentIndex',
         'fullScreen',
-        'playing'
+        'playing',
+        'playlist'
       ])
     }
   };
