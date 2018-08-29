@@ -17,7 +17,7 @@
     <scroll class="list" :data="songs" :listen-scroll="listenScroll" :probe-type="probeType" ref="list"
             @scroll="scroll">
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list :songs="songs" @select='selectItem'></song-list>
       </div>
     </scroll>
   </div>
@@ -27,6 +27,7 @@
   import Scroll from '../../base/scroll/scroll';
   import SongList from '../../base/song-list/song-list';
   import {prefixStyle} from '../../common/js/dom';
+  import {mapActions} from 'vuex';
 
   const RESERVED_HEIGHT = 40;
   const transform = prefixStyle('transform');
@@ -104,7 +105,16 @@
       },
       back: function () {
         this.$router.back();
-      }
+      },
+      selectItem: function (item, index) {
+        this.selectPlay({
+          list: this.songs,
+          index: index
+        });
+      },
+      ...mapActions([
+        'selectPlay'
+      ])
     },
     components: {
       Scroll,
